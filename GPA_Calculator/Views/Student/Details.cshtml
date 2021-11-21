@@ -1,0 +1,85 @@
+﻿@model Student
+@{
+    ViewData["Title"] = "Create Student";
+    Layout = "_StudentLayout";
+}
+
+<style>
+    .form-signin {
+        width: 80%;
+        padding: 2em;
+        display: flex;
+        align-self: center;
+        justify-self: center;
+    }
+
+    .gpa-detials {
+        font-size: 20px;
+        font-style: normal;
+        font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+    }
+</style>
+
+<div class="p-3 mt-3 bg-white d-flex align-items-center flex-row">
+    <div class="col-md-6 d-flex flex-row align-items-center">
+        <h1 class="studentName mr-3">@Model.FullName</h1>
+        <a class="btn btn-outline-primary" asp-controller="Student" asp-action="Edit" asp-route-studentId=@Model.StudentId><i class="fa fa-edit text-primary"></i></a>
+    </div> 
+    <div class="col-md-6">
+        <a class="btn btn-outline-primary float-right" asp-controller="Home" asp-action="Index">Student List</a>
+    </div>
+</div>
+
+<div class="d-flex justify-content-md-between flex-sm-wrap p-0 mt-3 m-0">
+    <div class="p-3 m-0 mb-3 bg-white d-flex justify-content-center flex-column w-100">
+        <div class="p-0 m-0">
+            <table class="table">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Course Code</th>
+                        <th scope="col">Course Unit</th>
+                        <th scope="col">Student Score</th>
+                        <th scope="col">Grade</th>
+                        <th scope="col">Grade Unit</th>
+                        <th scope="col">Cumulaitve Score</th>
+                        <th scope="col">Remarks</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @{ int i = 1; }
+                    @foreach (var course in Model.Courses)
+                    {
+                        <tr>
+                            <td scope="row">@i</td>
+                            <td>@course.CourseCode</td>
+                            <td>@course.CourseUnit</td>
+                            <td>@course.Score</td>
+                            <td>@course.Grade</td>
+                            <td>@course.GradeUnit</td>
+                            <td>@course.Cumulative</td>
+                            <td>@course.Remarks</td>
+                            <td>
+                                <a class="btn btn-sm btn-primary" asp-controller="Course" asp-action="Edit" asp-route-courseId=@course.CourseId><i class="fa fa-edit"></i></a>
+                                <a class="btn btn-sm btn-danger" asp-controller="Course" asp-action="Delete" asp-route-courseId=@course.CourseId><i class="fa fal fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex align-self-end mt-3">
+            <a type="button" class="btn btn-primary" asp-controller="Course" asp-action="Create" asp-route-studentId=@Model.StudentId>Add Course</a>
+        </div>
+    </div>
+    @{ var gpa = Model.Courses.Sum(x => x.Cumulative) / (double)Model.Courses.Sum(x => x.CourseUnit); }
+    <div class="d-flex flex-column bg-white p-3 col-md-5">
+        <p class="gpa-detials">Total Grade Unit Registered is: <strong>@Model.Courses.Sum(x => x.CourseUnit)</strong></p>
+        <p class="gpa-detials">Total Grade Unit Passed is: <strong>@Model.Courses.Sum(x => x.GradeUnit)</strong></p>
+        <p class="gpa-detials">Total Weight Point is: <strong>@Model.Courses.Sum(x => x.Cumulative).ToString("N2")</strong></p>
+        <p class="gpa-detials">Your GPA is: <strong class="text-primary">@gpa.ToString("N2")</strong>/5.00</p>
+    </div>
+</div>

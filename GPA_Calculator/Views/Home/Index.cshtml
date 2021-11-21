@@ -1,0 +1,61 @@
+﻿@model IEnumerable<Student>
+@{
+    ViewData["Title"] = "Home";
+}
+<style>
+
+    .header {
+        padding: .5em;
+        font-size: 60px;
+        font-style: normal;
+        font-family: 'IBM Plex Sans', sans-serif;
+        border-bottom: 1px solid #000;
+    }
+    .fa{
+        color: #eee;
+    }
+</style>
+
+<div class="p-4 m-3 bg-white d-flex justify-content-center">
+    <h1 class="header">Student GPA Management Board</h1>
+</div>
+
+<div class="p-4 m-3 bg-white d-flex justify-content-center flex-column">
+    <div class="d-flex align-self-end">
+        <a type="button" class="btn btn-outline-primary" asp-controller="Student" asp-action="Create">Add Student</a>
+    </div>
+    <div class="mt-2 m-0">
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Student Name</th>
+                    <th scope="col">School Name</th>
+                    <th scope="col">Class</th>
+                    <th scope="col">GPA</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @{ int i = 1; }
+                @foreach (var student in Model)
+                {
+                    <tr>
+                        <th scope="row">@i</th>
+                        <td>@student.FullName</td>
+                        <td>@student.SchoolName</td>
+                        <td>@student.Class</td>
+                        <td>0.0</td>
+                        <td>
+                            <a class="btn btn-sm btn-success" asp-controller="Student" asp-action="Details" asp-route-studentId=@student.StudentId><i class="fa fa-info-circle"></i></a>
+                            <a class="btn btn-sm btn-primary" asp-controller="Student" asp-action="Edit" asp-route-studentId=@student.StudentId><i class="fa fa-edit"></i></a>
+                            <a class="btn btn-sm btn-danger" asp-controller="Student" asp-action="Delete" asp-route-studentId=@student.StudentId><i class="fa fal fa-trash-alt"></i></a>
+                        </td>
+                    </tr>
+                    i++;
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

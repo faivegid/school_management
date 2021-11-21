@@ -1,0 +1,37 @@
+﻿@model StudentViewModel
+@{
+    ViewData["Title"] = "Create Student";
+    Layout = "_StudentLayout";
+}
+
+<style>
+    .form-signin {
+        width: 100%;
+        max-width: 500px;
+        padding: 15px;
+        margin: auto;
+        margin-top: 100px;
+        background-color: #fff;
+    }
+</style>
+<form method="post" asp-controller="Student" asp-action="Create">
+    <div class="form-group">
+        <label asp-for=@Model.FullName>Student FullName</label>
+        <input asp-for=@Model.FullName class="form-control" />
+        <span asp-validation-for=@Model.FullName class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for=@Model.SchoolName>School Name</label>
+        <input asp-for=@Model.SchoolName class="form-control" />
+        <span asp-validation-for=@Model.SchoolName class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for=@Model.Class>Student Class</label>
+        <input asp-for=@Model.Class class="form-control" />
+        <span asp-validation-for=@Model.Class class="text-danger"></span>
+    </div>
+    <div class="d-flex align-self-end">
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>
+
