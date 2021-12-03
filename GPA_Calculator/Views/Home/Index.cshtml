@@ -3,7 +3,6 @@
     ViewData["Title"] = "Home";
 }
 <style>
-
     .header {
         padding: .5em;
         font-size: 60px;
@@ -11,18 +10,21 @@
         font-family: 'IBM Plex Sans', sans-serif;
         border-bottom: 1px solid #000;
     }
-    .fa{
+
+    .fa {
         color: #eee;
     }
 </style>
 
+<!-- Header-->
 <div class="p-4 m-3 bg-white d-flex justify-content-center">
     <h1 class="header">Student GPA Management Board</h1>
 </div>
 
+<!-- Table Of Studernt-->
 <div class="p-4 m-3 bg-white d-flex justify-content-center flex-column">
     <div class="d-flex align-self-end">
-        <a type="button" class="btn btn-outline-primary" asp-controller="Student" asp-action="Create">Add Student</a>
+        <a class="btn btn-outline-primary" data-toggle="modal" data-target="#createModal">Add Student</a>
     </div>
     <div class="mt-2 m-0">
         <table class="table">
@@ -38,7 +40,9 @@
             </thead>
 
             <tbody>
-                @{ int i = 1; }
+                @{
+                    int i = 1;
+                }
                 @foreach (var student in Model)
                 {
                     <tr>
@@ -48,8 +52,8 @@
                         <td>@student.Class</td>
                         <td>0.0</td>
                         <td>
-                            <a class="btn btn-sm btn-success" asp-controller="Student" asp-action="Details" asp-route-studentId=@student.StudentId><i class="fa fa-info-circle"></i></a>
-                            <a class="btn btn-sm btn-primary" asp-controller="Student" asp-action="Edit" asp-route-studentId=@student.StudentId><i class="fa fa-edit"></i></a>
+                            <a class="btn btn-sm btn-success" asp-controller="Student" asp-action="index" asp-route-studentId=@student.StudentId><i class="fa fa-info-circle"></i></a>
+                            <a class="btn btn-sm btn-primary" data-toggle="modal" id="btnEditStudent" data-target="#editStudentModal" studentId=@student.StudentId><i class="fa fa-edit"></i></a>
                             <a class="btn btn-sm btn-danger" asp-controller="Student" asp-action="Delete" asp-route-studentId=@student.StudentId><i class="fa fal fa-trash-alt"></i></a>
                         </td>
                     </tr>
@@ -59,3 +63,52 @@
         </table>
     </div>
 </div>
+
+<!-- Create Student Modal-->
+<div id="createModal" class="modal fade" tabindex="-1" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h2>Add a New Student</h2>
+                </div>
+            </div>
+            <div class="modal-body">
+                @{
+                    await Html.RenderPartialAsync("_CreateStudent", new StudentViewModel());
+                }
+            </div>
+            <div class="modal-footer">
+                <button id="btnCreateStudent" class="btn btn-primary">Create</button>
+                <button id="submitForm" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Student Modal-->
+<div id="editStudentModal" class="modal fade" tabindex="-1" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h2>Edit Student Information!</h2>
+                </div>
+            </div>
+            <div class="modal-body">
+                @{
+                    await Html.RenderPartialAsync("_EditStudent", new Student());
+                }
+            </div>
+            <div class="modal-footer"> 
+                <button class="btn btn-primary" id="btnEditStudent">Edit</button>
+                <button id="submitForm" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script type="text/javascript" src="~/js/homeIndex.js"></script>
+}

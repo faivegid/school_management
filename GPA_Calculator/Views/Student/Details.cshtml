@@ -1,7 +1,7 @@
 ﻿@model Student
 @{
     ViewData["Title"] = "Create Student";
-    Layout = "_StudentLayout";
+    ViewBag.StudentId = Model.StudentId;
 }
 
 <style>
@@ -20,16 +20,18 @@
     }
 </style>
 
+<!-- Student Name -->
 <div class="p-3 mt-3 bg-white d-flex align-items-center flex-row">
     <div class="col-md-6 d-flex flex-row align-items-center">
         <h1 class="studentName mr-3">@Model.FullName</h1>
         <a class="btn btn-outline-primary" asp-controller="Student" asp-action="Edit" asp-route-studentId=@Model.StudentId><i class="fa fa-edit text-primary"></i></a>
     </div> 
     <div class="col-md-6">
-        <a class="btn btn-outline-primary float-right" asp-controller="Home" asp-action="Index">Student List</a>
+        <a class="btn btn-primary float-right" asp-controller="Home" asp-action="Index">Back to student list</a>
     </div>
 </div>
 
+<!-- Student Courses List-->
 <div class="d-flex justify-content-md-between flex-sm-wrap p-0 mt-3 m-0">
     <div class="p-3 m-0 mb-3 bg-white d-flex justify-content-center flex-column w-100">
         <div class="p-0 m-0">
@@ -62,7 +64,7 @@
                             <td>@course.Cumulative</td>
                             <td>@course.Remarks</td>
                             <td>
-                                <a class="btn btn-sm btn-primary" asp-controller="Course" asp-action="Edit" asp-route-courseId=@course.CourseId><i class="fa fa-edit"></i></a>
+                                <a class="btn btn-sm btn-primary" id="btnEditCourse" data-toggle="modal" data-target="#editCourseModal" courseId=@course.CourseId><i class="fa fa-edit"></i></a>
                                 <a class="btn btn-sm btn-danger" asp-controller="Course" asp-action="Delete" asp-route-courseId=@course.CourseId><i class="fa fal fa-trash-alt"></i></a>
                             </td>
                         </tr>
@@ -72,9 +74,11 @@
             </table>
         </div>
         <div class="d-flex align-self-end mt-3">
-            <a type="button" class="btn btn-primary" asp-controller="Course" asp-action="Create" asp-route-studentId=@Model.StudentId>Add Course</a>
+            <button class="btn btn-primary" data-target="#createCourseModal" data-toggle="modal" >Add Course</button>
         </div>
     </div>
+
+    <!-- Student GPA Section -->
     @{ var gpa = Model.Courses.Sum(x => x.Cumulative) / (double)Model.Courses.Sum(x => x.CourseUnit); }
     <div class="d-flex flex-column bg-white p-3 col-md-5">
         <p class="gpa-detials">Total Grade Unit Registered is: <strong>@Model.Courses.Sum(x => x.CourseUnit)</strong></p>
@@ -82,4 +86,54 @@
         <p class="gpa-detials">Total Weight Point is: <strong>@Model.Courses.Sum(x => x.Cumulative).ToString("N2")</strong></p>
         <p class="gpa-detials">Your GPA is: <strong class="text-primary">@gpa.ToString("N2")</strong>/5.00</p>
     </div>
+
 </div>
+
+<!-- Create Course Modal-->
+<div id="createCourseModal" class="modal fade" tabindex="-1" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h2>Add a New Student Course</h2>
+                </div>
+            </div>
+            <div class="modal-body">
+                @{
+                    await Html.RenderPartialAsync("_CreateCourse", new CourseViewModel());
+                }
+            </div>
+            <div class="modal-footer">
+                <button id="btnCreateCourse" class="btn btn-primary">Add</button>
+                <button id="submitForm" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div> 
+
+ <!-- Edit Course Modal-->
+<div id="editCourseModal" class="modal fade" tabindex="-1" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h2>Edit Course Details</h2>
+                </div>
+            </div>
+            <div class="modal-body">
+                @{
+                    await Html.RenderPartialAsync("_EditCourse", new Course());
+                }
+            </div>
+            <div class="modal-footer">
+                <button id="btnEditCourse" class="btn btn-primary">Edit Course</button>
+                <button id="submitForm" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div> 
+
+@section Scripts{
+    <script type="text/javascript" src="~/js/studentDetails.js"></script>
+}
+

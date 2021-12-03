@@ -1,5 +1,6 @@
 using GPA_Calculator.Data;
-using GPA_Calculator.Data.Repositories;
+using GPA_Calculator.Data.Repositories.Implementation;
+using GPA_Calculator.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -18,24 +19,20 @@ namespace GPA_Calculator
 
         public IConfiguration Configuration { get; }
 
+
         public void ConfigureServices(IServiceCollection services)
         {
             // configure dbcontext and database connection to sql server
             services.AddDbContext<ApplicationContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("StudentDatabase")));
 
-
-
-
             // configure dependnecies 
-            services.AddScoped<IStudentRepository, StudentRepository>();
-            services.AddScoped<ICourseRepository, CourseRepository>();
-
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddSession();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
-
 
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -56,6 +53,7 @@ namespace GPA_Calculator
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

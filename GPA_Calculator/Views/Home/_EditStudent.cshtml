@@ -1,0 +1,21 @@
+﻿@model Student
+
+<form id='editStudentForm' method="post">
+    <div class="form-group">
+        <label asp-for=@Model.FullName>Student FullName</label>
+        <input asp-for=@Model.FullName name="fullName" class="form-control" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for=@Model.SchoolName>School Name</label>
+        <input asp-for=@Model.SchoolName name="schoolName" class="form-control" />
+        <span asp-validation-for="SchoolName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for=@Model.Class>Student Class</label>
+        <input asp-for=@Model.Class name="class" class="form-control" />
+        <span asp-validation-for="Class" class="text-danger"></span>
+    </div>
+    <input asp-for=@Model.StudentId type="hidden" name="studentId" />
+</form>
+

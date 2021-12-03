@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GPA_Calculator.Models.ViewModels
 {
-    public class CourseViewmodel
+    public class CourseViewModel
     {
         public string CourseCode { get; set; }
 
@@ -13,6 +13,10 @@ namespace GPA_Calculator.Models.ViewModels
 
         [Range(0, 100)]
         [Required(ErrorMessage = "Score must be 0-100")]
-        public int Score { get; set; }       
+        public int Score { get; set; }   
+        
+        [Required]
+        public string StudentId { get; set; }
+
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
 using GPA_Calculator.Core;
 using GPA_Calculator.Data.Repositories;
+using GPA_Calculator.Data.Repositories.Interfaces;
 using GPA_Calculator.Models.DomainModels;
 using GPA_Calculator.Models.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -11,60 +13,38 @@ namespace GPA_Calculator.Controllers
     public class StudentController : Controller
     {
         private readonly ILogger<StudentController> _logger;
-        private readonly IStudentRepository _studentRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
 
-        public StudentController(ILogger<StudentController> logger, IStudentRepository studentRepository)
+        public StudentController(ILogger<StudentController> logger, IUnitOfWork unitOfWork)
         {
             this._logger = logger;
-            this._studentRepository = studentRepository;
+            this._unitOfWork = unitOfWork;
         }
 
 
         [HttpGet]
-        public async Task<IActionResult> Index(string studentId)
+        public async Task<IActionResult> IndexAsync(string studentId)
         {
-            var student = await _studentRepository.GetAsync(studentId);
-            return View(student);
-        }
-
-
-
-        [HttpGet]
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> CreateAsync(StudentViewModel studentModel)
-        {
-            Student student = Mapper.MapToStudent(studentModel);
-            await _studentRepository.CreateAsync(student);
-            return LocalRedirect("/Home");
-        }
-       
-
-        [HttpGet]
-        public async Task<IActionResult> DetailsAsync(string studentId)
-        {
-            var student = await _studentRepository.GetAsync(studentId);
-            return View(student);
-        }
-
-
-        [HttpPost]
-        public IActionResult Edit()
-        {
-            return View();
-        }
+            HttpContext.Session.SetString("studentId", studentId);
+            var student = await _unitOfWork.StudentRepository.GetWithCourse(studentId);
+            if(student == null)
+            {
+                LocalRedirect("home/error");
+            }
+            return View("Details", student);
+        }// end IndexAsync
 
 
         public async Task<IActionResult> DeleteAsync(string studentId)
         {
-            await _studentRepository.DeleteAsync(studentId);
+            var student = await _unitOfWork.StudentRepository.GetAsync(studentId);
+            if (student != null)
+            {
+                _unitOfWork.StudentRepository.Delete(student);
+                await _unitOfWork.SaveAllChangesAsync();
+            }
             return LocalRedirect("/Home");
-        }
+        }// end DeleteAsync
     }
 }

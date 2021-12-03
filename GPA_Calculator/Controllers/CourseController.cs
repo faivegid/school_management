@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using GPA_Calculator.Core;
 using GPA_Calculator.Data.Repositories;
+using GPA_Calculator.Data.Repositories.Implementation;
+using GPA_Calculator.Data.Repositories.Interfaces;
 using GPA_Calculator.Models.DomainModels;
 using GPA_Calculator.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -15,59 +17,61 @@ namespace GPA_Calculator.Controllers
     public class CourseController : Controller
     {
         private readonly ILogger<CourseController> _logger;
-        private readonly IStudentRepository _studentRepository;
-        private readonly ICourseRepository _courseRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CourseController(ILogger<CourseController> logger, IStudentRepository studentRepository, ICourseRepository courseRepository)
+        public CourseController(ILogger<CourseController> logger, IUnitOfWork unitOfWork)
         {
             this._logger = logger;
-            this._studentRepository = studentRepository;
-            this._courseRepository = courseRepository;
+            this._unitOfWork = unitOfWork;
         }
 
         public IActionResult Create(string studentId)
         {
-            HttpContext.Session.SetString("studentId", studentId);
+            ViewBag.StudentId = studentId;
             return View();
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> AddAsync(CourseViewmodel courseModel)
+        public async Task<IActionResult> AddAsync(CourseViewModel courseModel)
         {
-            // Gets the student for which the course is being added to
-            var studentId = HttpContext.Session.GetString("studentId");
-            
-            var student = await _studentRepository.GetAsync(studentId);
+            var student = await _unitOfWork.StudentRepository.GetAsync(courseModel.StudentId);
 
             var course = Mapper.MapToCourse(courseModel);
 
             // assing the sudent which course is to be addes to
             course.Students = new List<Student>() { student };
 
-            await _courseRepository.CreateAsync(course);
-            return RedirectToAction("Details", "Student", new { studentId = studentId });
+            await _unitOfWork.CourseRepository.CreateAsync(course);
+            return RedirectToAction("Details", "Student", new { studentId = courseModel.StudentId });
         }
 
 
 
         [HttpPost]
-        public async Task<IActionResult> EditAsync(string courseId, CourseViewmodel courseModel)
+        public async Task<IActionResult> EditAsync(string courseId, CourseViewModel courseModel)
         {
-
-            var studentId = HttpContext.Session.GetString("studentId");
             var course = Mapper.MapToCourse(courseModel);
             course.CourseId = courseId;
-            await _courseRepository.EditAsync(course);
-            return RedirectToAction("Details", "Student", new { studentId = studentId }); ;
+            _unitOfWork.CourseRepository.Edit(course);
+            await _unitOfWork.SaveAllChangesAsync();
+            return RedirectToAction("Details", "Student", new { studentId = courseModel.StudentId}); ;
         }
 
 
         public async Task<IActionResult> DeleteAsync(string courseId)
         {
             var studentId = HttpContext.Session.GetString("studentId");
-            await _courseRepository.DeleteAsync(courseId);
-            return RedirectToAction("Details", "Student", new { studentId = studentId }); ;
+            Course course = await _unitOfWork.CourseRepository.GetAsync(studentId);
+            if (course != null)
+            {
+                 _unitOfWork.CourseRepository.Delete(course);
+                if(await _unitOfWork.SaveAllChangesAsync())
+                {
+                    return RedirectToAction("Details", "Student", new { studentId = studentId }); 
+                }
+            }
+            return RedirectToAction();
         }
     }
 }

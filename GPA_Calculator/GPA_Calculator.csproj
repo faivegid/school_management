@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.21" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.21" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -16,6 +17,10 @@
   <ItemGroup>
     <ProjectReference Include="..\GPA_Calculator.Core\GPA_Calculator.Core.csproj" />
     <ProjectReference Include="..\GPA_Calculator.Data\GPA_Calculator.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Course\" />
   </ItemGroup>
 
 </Project>
