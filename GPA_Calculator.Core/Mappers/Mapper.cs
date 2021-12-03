@@ -6,7 +6,7 @@ namespace GPA_Calculator.Core
 {
     public class Mapper
     {
-        public static Course MapToCourse(CourseViewmodel model)
+        public static Course MapToCourse(CourseViewModel model)
         {
             var score = UnitCalculator.Gradescore(model.Score);
 

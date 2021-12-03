@@ -1,34 +1,28 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using GPA_Calculator.Core;
-using GPA_Calculator.Data;
-using GPA_Calculator.Data.Repositories;
-using GPA_Calculator.Models;
-using GPA_Calculator.Models.ViewModels;
+﻿using GPA_Calculator.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace GPA_Calculator.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IStudentRepository _studentRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
 
-        public HomeController(ILogger<HomeController> logger, IStudentRepository studentRepository)
+        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork)
         {
             _logger = logger;
-            this._studentRepository = studentRepository;
+            this._unitOfWork = unitOfWork;
         }
 
 
         [HttpGet]
         public async Task<IActionResult> IndexAsync()
         {
-            var students = await _studentRepository.GetAsync();
+            var students = await _unitOfWork.StudentRepository.GetAsync();
             return View(students);
-        }
-
+        }// end IndexAsync
     }
 }

@@ -1,15 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using GPA_Calculator.Models.DomainModels;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using GPA_Calculator.Models.DomainModels;
 
-namespace GPA_Calculator.Data.Repositories
+namespace GPA_Calculator.Data.Repositories.Interfaces
 {
-    public interface ICourseRepository
+    public interface ICourseRepository : IRepository<Course>
     {
-        Task<bool> CreateAsync(Course course);
-        Task<bool> DeleteAsync(string courseId);
-        Task<bool> EditAsync(Course course);
-        Task<Course> GetAsync(string courseId);
         Task<IEnumerable<Course>> GetStudentCoursesAsync(string studentId);
     }
 }
